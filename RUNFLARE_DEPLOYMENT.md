@@ -1,6 +1,7 @@
 # Runflare Deployment - Quick Reference
 
 ## ✅ qbazz-core (Backend API)
+
 - **Status**: ✅ DEPLOYED & RUNNING
 - **URL**: https://qbazz.runflare.run
 - **Health Check**: https://qbazz.runflare.run/health
@@ -10,6 +11,7 @@
 - **Latest Commit**: 444cb3c - "Add frontend domains to CORS allowed origins"
 
 ## 🚀 qbazz-web (Frontend)
+
 - **Status**: ⏳ READY TO DEPLOY
 - **GitHub**: https://github.com/skinny-dev/qbazz-web
 - **Latest Commit**: e9d91fe - "Initial commit - qbazz-web frontend"
@@ -20,12 +22,14 @@
 **Service Type**: ReactJS or Static Site
 
 **GitHub Repository**:
+
 ```
 Repository: skinny-dev/qbazz-web
 Branch: main
 ```
 
 **Build Configuration**:
+
 ```
 Build Command: npm run build
 Output Directory: dist
@@ -34,36 +38,44 @@ Node Version: 20.x
 ```
 
 **Environment Variables** (Add in Runflare):
+
 ```
 VITE_API_BASE=https://qbazz.runflare.run
 ```
 
 Optional (if using Gemini AI):
+
 ```
 GEMINI_API_KEY=your_gemini_api_key
 ```
 
 **Port Configuration**:
+
 - Target Port: 80 (default for static sites)
 - External Port: 80/443
 
 **Domain Options**:
+
 - Default: qbazz-web.runflare.run (or similar)
 - Custom: qbazz.com or www.qbazz.com
 
 ### Deployment Steps
 
 1. **Go to Runflare Dashboard**
+
    - Click "New Service" or "+"
 
 2. **Select Service Type**
+
    - Choose "ReactJS" or "Static Site"
 
 3. **Connect GitHub Repository**
+
    - Repository: `skinny-dev/qbazz-web`
    - Branch: `main`
 
 4. **Configure Build Settings**
+
    ```
    Build Command: npm run build
    Output Directory: dist
@@ -72,9 +84,11 @@ GEMINI_API_KEY=your_gemini_api_key
    ```
 
 5. **Set Environment Variables**
+
    - Add: `VITE_API_BASE=https://qbazz.runflare.run`
 
 6. **Deploy**
+
    - Click "Deploy" or "Create Service"
    - Monitor build logs
 
@@ -87,6 +101,7 @@ GEMINI_API_KEY=your_gemini_api_key
 ### API Integration Status
 
 ✅ **API Endpoints Used by Frontend**:
+
 - `GET /api/products` - List products
 - `GET /api/products/search` - Search products
 - `GET /api/stores` - List stores
@@ -94,6 +109,7 @@ GEMINI_API_KEY=your_gemini_api_key
 
 ✅ **CORS Configuration**:
 Backend allows:
+
 - https://qbazz.com
 - https://www.qbazz.com
 - https://qbazz.runflare.run (backend)
@@ -101,6 +117,7 @@ Backend allows:
 - http://localhost:5173 (local dev)
 
 ✅ **Frontend Configuration**:
+
 - API base URL: `VITE_API_BASE` environment variable
 - Default fallback: `http://localhost:3000` (for local dev)
 - API client: `services/api.ts`
@@ -108,6 +125,7 @@ Backend allows:
 ### Post-Deployment Verification
 
 Test these features:
+
 - [ ] Homepage loads
 - [ ] Products fetch from API
 - [ ] Store listings display
@@ -122,17 +140,20 @@ Test these features:
 ### Troubleshooting
 
 **Build Fails**:
+
 - Check build logs in Runflare
 - Verify Node version is 20.x
 - Test locally: `npm run build`
 
 **API Connection Issues**:
+
 - Verify `VITE_API_BASE` is set
 - Check backend health: https://qbazz.runflare.run/health
 - Check browser console for CORS errors
 - Verify backend CORS includes frontend domain
 
 **Blank Page**:
+
 - Check browser console for errors
 - Verify `dist` folder was created during build
 - Check routing configuration
@@ -140,6 +161,7 @@ Test these features:
 ### Continuous Deployment
 
 Auto-deploys on:
+
 - Push to `main` branch
 - Manual trigger in Runflare dashboard
 - Environment variable changes
@@ -147,6 +169,7 @@ Auto-deploys on:
 ### Custom Domain Setup (Optional)
 
 If using `qbazz.com`:
+
 1. Add domain in Runflare service settings
 2. Update DNS at domain provider:
    ```
@@ -203,7 +226,7 @@ If using `qbazz.com`:
 ## Support
 
 - **Backend API**: https://qbazz.runflare.run/health
-- **GitHub Issues**: 
+- **GitHub Issues**:
   - Backend: https://github.com/skinny-dev/qbazz-core/issues
   - Frontend: https://github.com/skinny-dev/qbazz-web/issues
 - **Runflare Docs**: https://docs.runflare.run

@@ -1,19 +1,13 @@
-import React, {
-  useState,
-  useMemo,
-  useRef,
-  useEffect,
-  useCallback,
-} from "react";
+import React, { useMemo, useState } from "react";
 import ProductCard from "../components/ProductCard";
-import { Product } from "../types";
+import { Category, Product } from "../types";
 import { Icon } from "../components/Icon";
 import CategoryCard from "../components/CategoryCard";
 import ProductCardSkeleton from "../components/ProductCardSkeleton";
-import { fetchCategories, type Category } from "../services/api";
 
 interface HomePageProps {
   products: Product[];
+  categories: Category[];
   isLoading: boolean;
 }
 
@@ -83,28 +77,13 @@ const HomePageSkeleton = () => {
   );
 };
 
-const HomePage: React.FC<HomePageProps> = ({ products, isLoading }) => {
+const HomePage: React.FC<HomePageProps> = ({
+  products,
+  categories,
+  isLoading,
+}) => {
   const [sortOrder, setSortOrder] = useState<SortOption>("newest");
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string>("all");
-
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        setCategoriesLoading(true);
-        const data = await fetchCategories();
-        setCategories(data);
-      } catch (error) {
-        console.error("Failed to load categories:", error);
-      } finally {
-        setCategoriesLoading(false);
-      }
-    };
-    loadCategories();
-  }, []);
-
-  const trendingProducts = useMemo(() => products.slice(0, 8), [products]);
 
   const sortedProducts = useMemo(() => {
     const productsToSort = [...products];
@@ -135,89 +114,6 @@ const HomePage: React.FC<HomePageProps> = ({ products, isLoading }) => {
     );
   }, [sortedProducts, activeCategory, categories]);
 
-  const ProductCarousel: React.FC<{ products: Product[] }> = ({ products }) => {
-    const scrollRef = useRef<HTMLDivElement>(null);
-    const [canScrollPrev, setCanScrollPrev] = useState(false);
-    const [canScrollNext, setCanScrollNext] = useState(true);
-
-    const checkForScrollPosition = useCallback(() => {
-      if (scrollRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-        const maxScrollLeft = scrollWidth - clientWidth;
-        // In RTL, scrollLeft is 0 on the right and negative to the left.
-        setCanScrollPrev(scrollLeft < 0);
-        setCanScrollNext(scrollLeft > -maxScrollLeft + 1);
-      }
-    }, []);
-
-    useEffect(() => {
-      const currentRef = scrollRef.current;
-      if (currentRef) {
-        checkForScrollPosition();
-        currentRef.addEventListener("scroll", checkForScrollPosition, {
-          passive: true,
-        });
-        window.addEventListener("resize", checkForScrollPosition);
-      }
-      return () => {
-        if (currentRef) {
-          currentRef.removeEventListener("scroll", checkForScrollPosition);
-        }
-        window.removeEventListener("resize", checkForScrollPosition);
-      };
-    }, [products, checkForScrollPosition]);
-
-    const scroll = (direction: "prev" | "next") => {
-      if (scrollRef.current) {
-        const scrollAmount = scrollRef.current.clientWidth * 0.8;
-        // For RTL: 'prev' means scroll right (increase scrollLeft toward 0)
-        // 'next' means scroll left (decrease scrollLeft)
-        const newScroll =
-          direction === "prev"
-            ? scrollRef.current.scrollLeft + scrollAmount
-            : scrollRef.current.scrollLeft - scrollAmount;
-
-        scrollRef.current.scrollTo({
-          left: newScroll,
-          behavior: "smooth",
-        });
-      }
-    };
-
-    return (
-      <div className="relative overflow-hidden">
-        {canScrollPrev && (
-          <button
-            onClick={() => scroll("prev")}
-            className="absolute top-1/2 -translate-y-1/2 right-0 z-10 bg-white/80 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center shadow-md hover:bg-white transition-colors"
-            aria-label="محصولات قبلی"
-          >
-            <Icon name="chevronRight" className="w-6 h-6 text-gray-700" />
-          </button>
-        )}
-        <div
-          ref={scrollRef}
-          className="flex space-x-6 space-x-reverse overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide"
-        >
-          {products.map((product) => (
-            <div key={product.id} className="flex-shrink-0 w-64">
-              <ProductCard product={product} isSpecial={true} />
-            </div>
-          ))}
-        </div>
-        {canScrollNext && (
-          <button
-            onClick={() => scroll("next")}
-            className="absolute top-1/2 -translate-y-1/2 left-0 z-10 bg-white/80 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center shadow-md hover:bg-white transition-colors"
-            aria-label="محصولات بعدی"
-          >
-            <Icon name="chevronLeft" className="w-6 h-6 text-gray-700" />
-          </button>
-        )}
-      </div>
-    );
-  };
-
   if (isLoading) {
     return <HomePageSkeleton />;
   }
@@ -236,24 +132,15 @@ const HomePage: React.FC<HomePageProps> = ({ products, isLoading }) => {
             onClick={() => setActiveCategory("all")}
           />
 
-          {categoriesLoading
-            ? Array(6)
-                .fill(0)
-                .map((_, index) => (
-                  <div
-                    key={index}
-                    className="aspect-square w-full shimmer-bg rounded-2xl"
-                  ></div>
-                ))
-            : categories.map((category) => (
-                <CategoryCard
-                  key={category.slug}
-                  name={category.title}
-                  emoji={category.icon || "📦"}
-                  isActive={activeCategory === category.slug}
-                  onClick={() => setActiveCategory(category.slug)}
-                />
-              ))}
+          {categories.map((category) => (
+            <CategoryCard
+              key={category.slug}
+              name={category.title}
+              emoji={category.icon || "📦"}
+              isActive={activeCategory === category.slug}
+              onClick={() => setActiveCategory(category.slug)}
+            />
+          ))}
         </div>
       </div>
 
@@ -272,9 +159,6 @@ const HomePage: React.FC<HomePageProps> = ({ products, isLoading }) => {
           جدیدترین‌های بازار بزرگ تهران، فقط در کیوبازار
         </p>
       </div>
-
-      {/* Trending Products Carousel */}
-      <ProductCarousel products={trendingProducts} />
 
       {/* Sorting */}
       <div className="mt-12 flex items-center justify-center space-x-6 space-x-reverse text-gray-500 font-medium border-t pt-8">

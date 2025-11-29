@@ -260,7 +260,7 @@ export type Category = {
 };
 
 export async function fetchCategories(): Promise<Category[]> {
-  const url = `${API_BASE}/api/categories/root`;
+  const url = `${API_BASE}/api/categories`;
   const res = await fetch(url, {
     headers: {
       "User-Agent": "QbazzWeb/1.0",

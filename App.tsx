@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { Product, Store, Page, AppContextType } from "./types";
+import { Product, Store, Page, AppContextType, Category } from "./types";
 import { AppContext } from "./context/AppContext";
 import Header from "./components/Header";
 import HomePage from "./pages/HomePage";
@@ -8,12 +8,13 @@ import StorePage from "./pages/StorePage";
 import RegisterStorePage from "./pages/RegisterStorePage";
 import SearchModal from "./components/SearchModal";
 import Footer from "./components/Footer";
-import { fetchProducts } from "./services/api";
+import { fetchCategories, fetchProducts } from "./services/api";
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>({ name: "home" });
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -21,11 +22,20 @@ const App: React.FC = () => {
     (async () => {
       try {
         setIsLoading(true);
-        const list = await fetchProducts(24);
-        if (!cancelled) setProducts(list);
+        const [productsList, categoriesList] = await Promise.all([
+          fetchProducts(24),
+          fetchCategories(),
+        ]);
+        if (!cancelled) {
+          setProducts(productsList);
+          setCategories(categoriesList);
+        }
       } catch (e) {
-        console.error("Failed to load products:", e);
-        if (!cancelled) setProducts([]);
+        console.error("Failed to load initial data:", e);
+        if (!cancelled) {
+          setProducts([]);
+          setCategories([]);
+        }
       } finally {
         if (!cancelled) setIsLoading(false);
       }
@@ -47,8 +57,14 @@ const App: React.FC = () => {
     () => ({
       navigateTo,
       openSearch,
+      categories,
+      searchModal: {
+        isOpen: isSearchOpen,
+        open: openSearch,
+        close: closeSearch,
+      },
     }),
-    []
+    [isSearchOpen, categories]
   );
 
   const renderPage = () => {
@@ -75,14 +91,20 @@ const App: React.FC = () => {
         return <RegisterStorePage />;
       case "home":
       default:
-        return <HomePage products={products} isLoading={isLoading} />;
+        return (
+          <HomePage
+            products={products}
+            categories={categories}
+            isLoading={isLoading}
+          />
+        );
     }
   };
 
   return (
     <AppContext.Provider value={appContextValue}>
       <div className="bg-[#F8F9FA] min-h-screen flex flex-col">
-        <Header isSearchOpen={isSearchOpen} />
+        <Header />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
           {renderPage()}
         </main>

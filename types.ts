@@ -1,3 +1,14 @@
+export interface Category {
+  id: number;
+  title: string;
+  slug: string;
+  icon: string | null;
+  description: string | null;
+  parentId: number | null;
+  isActive: boolean;
+  sortOrder: number;
+  children?: Category[];
+}
 
 export interface Store {
   id: string;
@@ -22,17 +33,22 @@ export interface Product {
 }
 
 export type Page =
-  | { name: 'home' }
-  | { name: 'product'; data: Product }
-  | { name: 'store'; data: Store }
-  | { name: 'registerStore' };
+  | { name: "home" }
+  | { name: "product"; data: Product }
+  | { name: "store"; data: Store }
+  | { name: "registerStore" };
 
 export interface AppContextType {
   navigateTo: (page: Page) => void;
-  openSearch: () => void;
+  categories: Category[];
+  searchModal: {
+    isOpen: boolean;
+    open: () => void;
+    close: () => void;
+  };
 }
 
 export interface ChatMessage {
-  role: 'user' | 'model';
+  role: "user" | "model";
   text: string;
 }

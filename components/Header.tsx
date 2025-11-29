@@ -1,17 +1,10 @@
 import React, { useContext } from "react";
 import { Icon } from "./Icon";
 import { AppContext } from "../context/AppContext";
+import { AppContextType } from "../types";
 
-interface HeaderProps {
-  isSearchOpen: boolean;
-}
-
-const Header: React.FC<HeaderProps> = ({ isSearchOpen }) => {
-  const appContext = useContext(AppContext);
-
-  const handleSearchClick = () => {
-    appContext?.openSearch();
-  };
+const Header: React.FC = () => {
+  const appContext = useContext(AppContext) as AppContextType;
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-40">
@@ -31,11 +24,11 @@ const Header: React.FC<HeaderProps> = ({ isSearchOpen }) => {
           {/* Center: Search Bar (Desktop) - Absolutely centered */}
           <div
             className={`absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-full max-w-lg hidden md:block transition-opacity ${
-              isSearchOpen ? "opacity-0" : "opacity-100"
+              appContext?.searchModal.isOpen ? "opacity-0" : "opacity-100"
             }`}
           >
             <button
-              onClick={handleSearchClick}
+              onClick={() => appContext?.searchModal.open()}
               className="relative w-full text-right"
               aria-label="جستجو"
             >
@@ -61,9 +54,9 @@ const Header: React.FC<HeaderProps> = ({ isSearchOpen }) => {
               <span>ثبت فروشگاه</span>
             </button>
             <button
-              onClick={handleSearchClick}
+              onClick={() => appContext?.searchModal.open()}
               className={`md:hidden p-2 rounded-full hover:bg-gray-100 transition-colors ${
-                isSearchOpen ? "opacity-0" : "opacity-100"
+                appContext?.searchModal.isOpen ? "opacity-0" : "opacity-100"
               }`}
               aria-label="Search"
             >
