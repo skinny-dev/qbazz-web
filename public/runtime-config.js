@@ -1,0 +1,1 @@
+<script>window.__QBAZZ_API_BASE__='https://api.qbazz.com';</script>

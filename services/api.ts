@@ -1,7 +1,30 @@
 import type { Product, Store } from "../types";
 
-const API_BASE =
-  (import.meta as any).env?.VITE_API_BASE || "http://localhost:3000";
+// Resolve API base URL with this precedence:
+// 1. runtime global `window.__QBAZZ_API_BASE__` (recommended for production)
+// 2. Vite build-time env `import.meta.env.VITE_API_BASE` (kept for backwards compatibility)
+// 3. If running on localhost -> `http://localhost:3000`
+// 4. Otherwise default to production API: `https://api.qbazz.com`
+function resolveApiBase(): string {
+  try {
+    if (typeof window !== "undefined" && (window as any).__QBAZZ_API_BASE__) {
+      return (window as any).__QBAZZ_API_BASE__;
+    }
+  } catch (_) {}
+
+  const vite = (import.meta as any).env?.VITE_API_BASE;
+  if (vite) return vite;
+
+  try {
+    if (typeof location !== "undefined" && location.hostname === "localhost") {
+      return "http://localhost:3000";
+    }
+  } catch (_) {}
+
+  return "https://api.qbazz.com";
+}
+
+const API_BASE = resolveApiBase();
 
 // Types based on qbazz-core API responses
 type ApiProduct = {
@@ -166,15 +189,27 @@ export async function fetchProducts(limit = 24): Promise<Product[]> {
   const url = `${API_BASE}/api/products?limit=${encodeURIComponent(
     String(limit)
   )}`;
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": "QbazzWeb/1.0",
-      Accept: "application/json",
-      "Accept-Language": "fa-IR,fa;q=0.9",
-    },
-  });
+  console.debug(`[API] GET ${url}`);
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      headers: {
+        "User-Agent": "QbazzWeb/1.0",
+        Accept: "application/json",
+        "Accept-Language": "fa-IR,fa;q=0.9",
+      },
+    });
+  } catch (err) {
+    console.error(`[API] Network error fetching products from ${url}:`, err);
+    throw err;
+  }
+
+  console.debug(
+    `[API] Response ${res.status} ${res.statusText} for GET ${url}`
+  );
   if (!res.ok) {
     const text = await res.text().catch(() => "");
+    console.error(`[API] Failed to fetch products ${res.status} ${text}`);
     throw new Error(`Failed to fetch products: ${res.status} ${text}`);
   }
   const response: ApiResponse<ApiProduct[]> = await res.json();
@@ -186,15 +221,27 @@ export async function fetchStores(limit = 20): Promise<Store[]> {
   const url = `${API_BASE}/api/stores?limit=${encodeURIComponent(
     String(limit)
   )}&isApproved=true&isActive=true`;
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": "QbazzWeb/1.0",
-      Accept: "application/json",
-      "Accept-Language": "fa-IR,fa;q=0.9",
-    },
-  });
+  console.debug(`[API] GET ${url}`);
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      headers: {
+        "User-Agent": "QbazzWeb/1.0",
+        Accept: "application/json",
+        "Accept-Language": "fa-IR,fa;q=0.9",
+      },
+    });
+  } catch (err) {
+    console.error(`[API] Network error fetching stores from ${url}:`, err);
+    throw err;
+  }
+
+  console.debug(
+    `[API] Response ${res.status} ${res.statusText} for GET ${url}`
+  );
   if (!res.ok) {
     const text = await res.text().catch(() => "");
+    console.error(`[API] Failed to fetch stores ${res.status} ${text}`);
     throw new Error(`Failed to fetch stores: ${res.status} ${text}`);
   }
   const response: ApiResponse<any[]> = await res.json();
@@ -231,15 +278,27 @@ export async function searchProducts(
   const url = `${API_BASE}/api/products/search?q=${encodeURIComponent(
     query
   )}&limit=${encodeURIComponent(String(limit))}`;
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": "QbazzWeb/1.0",
-      Accept: "application/json",
-      "Accept-Language": "fa-IR,fa;q=0.9",
-    },
-  });
+  console.debug(`[API] GET ${url}`);
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      headers: {
+        "User-Agent": "QbazzWeb/1.0",
+        Accept: "application/json",
+        "Accept-Language": "fa-IR,fa;q=0.9",
+      },
+    });
+  } catch (err) {
+    console.error(`[API] Network error searching products from ${url}:`, err);
+    throw err;
+  }
+
+  console.debug(
+    `[API] Response ${res.status} ${res.statusText} for GET ${url}`
+  );
   if (!res.ok) {
     const text = await res.text().catch(() => "");
+    console.error(`[API] Failed to search products ${res.status} ${text}`);
     throw new Error(`Failed to search products: ${res.status} ${text}`);
   }
   const response: ApiResponse<ApiProduct[]> = await res.json();
@@ -261,15 +320,27 @@ export type Category = {
 
 export async function fetchCategories(): Promise<Category[]> {
   const url = `${API_BASE}/api/categories`;
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": "QbazzWeb/1.0",
-      Accept: "application/json",
-      "Accept-Language": "fa-IR,fa;q=0.9",
-    },
-  });
+  console.debug(`[API] GET ${url}`);
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      headers: {
+        "User-Agent": "QbazzWeb/1.0",
+        Accept: "application/json",
+        "Accept-Language": "fa-IR,fa;q=0.9",
+      },
+    });
+  } catch (err) {
+    console.error(`[API] Network error fetching categories from ${url}:`, err);
+    throw err;
+  }
+
+  console.debug(
+    `[API] Response ${res.status} ${res.statusText} for GET ${url}`
+  );
   if (!res.ok) {
     const text = await res.text().catch(() => "");
+    console.error(`[API] Failed to fetch categories ${res.status} ${text}`);
     throw new Error(`Failed to fetch categories: ${res.status} ${text}`);
   }
   const response: ApiResponse<Category[]> = await res.json();

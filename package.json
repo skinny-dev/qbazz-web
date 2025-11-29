@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/write-runtime-config.js",
     "build": "vite build",
+    "build:ci": "node scripts/write-runtime-config.js && vite build",
     "preview": "vite preview"
   },
   "dependencies": {

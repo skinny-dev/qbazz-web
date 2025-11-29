@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import ProductCard from "../components/ProductCard";
 import { Category, Product } from "../types";
 import { Icon } from "../components/Icon";
@@ -143,7 +143,6 @@ const HomePage: React.FC<HomePageProps> = ({
           ))}
         </div>
       </div>
-
       {/* Trending Products Banner */}
       <div className="relative bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-8 text-white text-center flex flex-col items-center justify-center h-32 overflow-hidden">
         <Icon
@@ -159,7 +158,6 @@ const HomePage: React.FC<HomePageProps> = ({
           جدیدترین‌های بازار بزرگ تهران، فقط در کیوبازار
         </p>
       </div>
-
       {/* Sorting */}
       <div className="mt-12 flex items-center justify-center space-x-6 space-x-reverse text-gray-500 font-medium border-t pt-8">
         {sortOptions.map(({ key, label }) => (
@@ -203,7 +201,6 @@ const HomePage: React.FC<HomePageProps> = ({
           )}
         </div>
       </div>
-
       <style>{`
         /* Hide scrollbar for Chrome, Safari and Opera */
         .scrollbar-hide::-webkit-scrollbar {

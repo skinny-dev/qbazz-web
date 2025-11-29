@@ -31,7 +31,7 @@ Branch: main
 **Build Configuration**:
 
 ```
-Build Command: npm run build
+Build Command: npm run build:ci   # runs runtime-config injection then builds
 Output Directory: dist
 Install Command: npm ci
 Node Version: 20.x
@@ -40,8 +40,17 @@ Node Version: 20.x
 **Environment Variables** (Add in Runflare):
 
 ```
-VITE_API_BASE=https://qbazz.runflare.run
+API_BASE=https://api.qbazz.com
 ```
+
+Recommended: create a lightweight `public/runtime-config.js` during your deploy with the following content to set the runtime global used by the app:
+
+```html
+<script>
+   window.__QBAZZ_API_BASE__ = "https://api.qbazz.com";
+</script>
+```
+This lets the static site pick up the correct API base at runtime without needing a rebuild.
 
 Optional (if using Gemini AI):
 
@@ -85,7 +94,7 @@ GEMINI_API_KEY=your_gemini_api_key
 
 5. **Set Environment Variables**
 
-   - Add: `VITE_API_BASE=https://qbazz.runflare.run`
+   - Add: `API_BASE=https://api.qbazz.com` (or ensure `public/runtime-config.js` injects `window.__QBAZZ_API_BASE__`)
 
 6. **Deploy**
 
@@ -118,7 +127,7 @@ Backend allows:
 
 ✅ **Frontend Configuration**:
 
-- API base URL: `VITE_API_BASE` environment variable
+- API base URL: `API_BASE` environment variable (preferred) or runtime global `window.__QBAZZ_API_BASE__`
 - Default fallback: `http://localhost:3000` (for local dev)
 - API client: `services/api.ts`
 
@@ -145,9 +154,9 @@ Test these features:
 - Verify Node version is 20.x
 - Test locally: `npm run build`
 
-**API Connection Issues**:
+- **API Connection Issues**:
 
-- Verify `VITE_API_BASE` is set
+- Verify `API_BASE` or runtime `window.__QBAZZ_API_BASE__` is set
 - Check backend health: https://qbazz.runflare.run/health
 - Check browser console for CORS errors
 - Verify backend CORS includes frontend domain

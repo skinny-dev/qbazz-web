@@ -19,7 +19,7 @@ This React application is configured for deployment on Runflare's ReactJS/Static
 ### Build Settings
 
 ```
-Build Command: npm run build
+Build Command: npm run build:ci   # inject runtime config from API_BASE then build
 Node Version: 20.x
 Output Directory: dist
 Install Command: npm ci
@@ -30,7 +30,7 @@ Install Command: npm ci
 Add the following environment variable in Runflare service settings:
 
 ```
-VITE_API_BASE=https://qbazz.runflare.run
+API_BASE=https://api.qbazz.com
 ```
 
 Optional (if using Gemini AI features):
@@ -68,7 +68,7 @@ qbazz-web/
 ├── package.json        # Dependencies and scripts
 ├── .env.production     # Production environment vars
 ├── services/
-│   └── api.ts          # API client (uses VITE_API_BASE)
+│   └── api.ts          # API client (reads runtime `window.__QBAZZ_API_BASE__`, falls back to VITE_API_BASE)
 ├── components/         # React components
 ├── pages/              # Page components
 ├── hooks/              # Custom React hooks
@@ -86,7 +86,7 @@ qbazz-web/
 
 The frontend communicates with the backend API via:
 
-- Base URL: `VITE_API_BASE` environment variable
+-- Base URL: `API_BASE` environment variable or runtime `window.__QBAZZ_API_BASE__`
 - Default fallback: `http://localhost:3000` (for local development)
 - API client: `services/api.ts`
 
@@ -114,7 +114,7 @@ npm run preview
 ### 1. Push Code to GitHub
 
 ```bash
-cd qbazz-web
+API_BASE=https://api.qbazz.com
 git init
 git add .
 git commit -m "Initial commit - qbazz-web"
@@ -123,19 +123,14 @@ git remote add origin https://github.com/YOUR_USERNAME/qbazz-web.git
 git push -u origin main
 ```
 
-### 2. Create Runflare Service
-
-1. Log in to Runflare dashboard
-2. Click "New Service" or "+"
-3. Select service type: **ReactJS** or **Static Site**
 4. Connect to GitHub repository: `YOUR_USERNAME/qbazz-web`
 5. Select branch: `main`
 
 ### 3. Configure Build Settings
 
 ```
-Build Command: npm run build
-Output Directory: dist
+API_BASE=https://api.qbazz.com
+```
 Install Command: npm ci
 Node Version: 20.x
 ```
@@ -145,16 +140,12 @@ Node Version: 20.x
 Add in Runflare service settings:
 
 ```
-VITE_API_BASE=https://qbazz.runflare.run
+API_BASE=https://api.qbazz.com
 ```
 
 ### 5. Deploy
 
 - Runflare will automatically build and deploy
-- Monitor build logs for any errors
-- Once deployed, access at provided URL
-
-### 6. Verify Deployment
 
 Test the following:
 
@@ -177,7 +168,7 @@ Test the following:
 
 ### API Connection Issues
 
-- Verify VITE_API_BASE is set correctly
+-- Verify `API_BASE` or runtime `window.__QBAZZ_API_BASE__` is set correctly
 - Check backend API is running: https://qbazz.runflare.run/health
 - Check browser console for CORS errors
 - Verify backend allows frontend domain in CORS settings
@@ -240,7 +231,7 @@ Monitor in Runflare dashboard:
 - HTTPS enforced automatically by Runflare
 - Environment variables encrypted at rest
 - API credentials never exposed to client
-- VITE_API_BASE is public (embedded in build)
+-- `API_BASE` (if passed at build-time) is public in the built code; prefer runtime injection to avoid rebuilding for config changes
 - Keep GEMINI_API_KEY secure if used
 
 ## Tech Stack

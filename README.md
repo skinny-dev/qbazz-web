@@ -46,7 +46,7 @@ npm run preview
 ## Environment Variables
 
 ```env
-VITE_API_BASE=https://qbazz.runflare.run
+API_BASE=https://api.qbazz.com
 GEMINI_API_KEY=your_key_here
 ```
 
@@ -68,7 +68,7 @@ qbazz-web/
 
 Connects to qbazz-core backend:
 
-- Base URL configured via `VITE_API_BASE`
+- Base URL configured via `API_BASE` (preferred) or runtime global `window.__QBAZZ_API_BASE__`
 - RESTful API communication
 - Type-safe API client
 
@@ -84,7 +84,7 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions to Run
    - Build Command: `npm run build`
    - Output Directory: `dist`
    - Node Version: `20.x`
-4. Set environment: `VITE_API_BASE=https://qbazz.runflare.run`
+4. Set environment: `API_BASE=https://api.qbazz.com` (or inject runtime global `window.__QBAZZ_API_BASE__`)
 5. Deploy!
 
 ## Contributing
